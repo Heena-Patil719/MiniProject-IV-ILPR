@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluate Project</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f3f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+        h2 {
+            color: #2a4d9b;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .info p {
+            margin: 6px 0;
+            font-size: 16px;
+        }
+        form > div {
+            margin-bottom: 16px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        select, textarea, input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .messages {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Evaluate Project: {{ project_name }}</h2>
+        <div class="info">
+            <p><strong>Team Leader:</strong> {{ project.team_leader_name }}</p>
+            <p><strong>Mentor:</strong> {{ mentor }}</p>
+            <p><strong>Project Type:</strong> {{ project_type }}</p>
+        </div>
+
+        <form method="POST" onsubmit="disableSubmitButton()">
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name != 'project_type' %}
+                    <div>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <small style="color: red;">{{ field.errors }}</small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit" id="submit-btn" {% if already_evaluated %}disabled{% endif %}>
+                Submit Evaluation
+            </button>
+        </form>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <script>
+                        alert("{{ message }}");
+                    </script>
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function disableSubmitButton() {
+            document.getElementById("submit-btn").disabled = true;
+        }
+    </script>
+</body>
+</html>

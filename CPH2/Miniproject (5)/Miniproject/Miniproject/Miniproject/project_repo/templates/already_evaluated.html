@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Already Evaluated - {{ project.title }}</title>
+</head>
+<body>
+    <h2>The project "{{ project.title }}" has already been evaluated.</h2>
+    <p><strong>Team Leader:</strong> {{ project.team_leader_name }}</p>
+    <p>The evaluation for this project has already been completed.</p>
+    <a href="{% url 'teacher_evaluations' %}">Back to Evaluations</a>
+</body>
+</html>

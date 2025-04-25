@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Idea Submission Success</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #00ff99, #ffffff);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #008000;
+            font-size: 26px;
+            font-weight: bold;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+        .btn {
+            background: #008000;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 18px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        .btn:hover {
+            background: #006600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Submission Successful!</h1>
+        <p>Your idea has been successfully submitted.</p>
+        <a href="{% url 'idea_form' %}" class="btn">Submit Another Idea</a>
+    </div>
+</body>
+</html>

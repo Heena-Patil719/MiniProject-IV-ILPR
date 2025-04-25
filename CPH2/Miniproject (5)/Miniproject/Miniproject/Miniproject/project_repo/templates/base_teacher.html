@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Teacher Portal{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+    margin: 0; /* Removes extra white space around the page */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+    background: linear-gradient(to bottom, #FAF3E0, #FA9591); /* Gradient background */
+    background-size: cover; /* Ensures the background covers the entire page */
+    height: 100vh; /* Sets the page height to full viewport height */
+}
+    
+        .navbar {
+            display: flex;
+            justify-content: space-between; /* Space out logo and links */
+            align-items: center;
+            background: #4C1D3D; /* Deep maroon background */
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%; /* Full width */
+            border-top-left-radius: 15px; /* Rounded top-left corner */
+            border-top-right-radius: 15px; /* Rounded top-right corner */
+        }
+    
+        .navbar img {
+            height: 60px; /* Adjusts logo size */
+            flex-shrink: 0; /* Prevents shrinking of the logo */
+        }
+    
+        .navbar .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-left: 10px; /* Space between logo and title */
+            position: relative;
+            top: -10px; /* Slight upward adjustment */
+            flex-shrink: 0; /* Prevents shrinking of the title */
+        }
+    
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px; /* Space between links */
+            flex-grow: 1; /* Pushes links to fill available space */
+            justify-content: flex-end; /* Aligns links towards the right */
+            padding-right: 70px; /* Adds consistent padding to right side */
+        }
+    
+        .navbar .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+            white-space: nowrap; /* Prevents text from breaking */
+            transition: color 0.3s ease;
+        }
+    
+        .navbar .nav-links a:hover {
+            color: #FA9591; /* Soft peach hover effect */
+        }
+    
+        .navbar .logout-link {
+            font-size: 18px; /* Matches other links */
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            transition: color 0.3s ease;
+            padding-left: 10px; /* Adds a slight separation for visual balance */
+        }
+    
+        .navbar .logout-link:hover {
+            color: #FA9591; /* Matches hover style of other links */
+        }
+    
+        /* Responsive Design for Smaller Screens */
+        @media (max-width: 768px) {
+            .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #4C1D3D; /* Deep maroon background */
+    color: white;
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%; /* Full width to match the container */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+    
+            .navbar .nav-links {
+    flex-direction: column; /* Stack links vertically */
+    align-items: flex-start; /* Align links to the left */
+    justify-content: flex-start; /* Moves links towards the left */
+    flex-grow: 0; /* Keeps links in their default size */
+    gap: 10px; /* Reduces spacing between links */
+    margin-left: 30px; /* Increase this value to shift links further left */
+}
+    
+            .navbar img {
+                margin-bottom: 10px; /* Adds spacing below the logo */
+            }
+        }
+        .welcome-section {
+    background: linear-gradient(to bottom, #FFBC95, #FA9591); /* Gradient background */
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+    border-radius: 0; /* Removes any corner rounding */
+    margin: 0; /* Removes spacing above and below the container */
+    width: 100%; /* Matches the width of the navigation bar */
+}
+    </style>
+    
+    
+    
+</head>
+<body>
+    <!-- Include the navbar -->
+    {% include "navbar.html" %}
+
+    <!-- Content Section -->
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

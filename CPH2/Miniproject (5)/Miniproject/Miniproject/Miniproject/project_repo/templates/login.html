@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    body {
+      background: linear-gradient(to bottom, #4C1D3D, #FFBC95);
+      font-family: Arial, sans-serif;
+      color: #333;
+      text-align: center;
+    }
+
+    .main-container {
+      background: white;
+      width: 800px;
+      padding: 20px;
+      margin: 50px auto;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .logo-container img {
+      width: 400px;
+      height: auto;
+    }
+
+    .title-container {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #A23759;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+
+    .blue-button {
+      background: #DC576C;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .blue-button:hover {
+      background:#4C1D3D;
+    }
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .bottom-buttons a {
+      text-decoration: none;
+      padding: 10px 15px;
+      background:#007bff;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .bottom-buttons a:hover {
+      background: #0056b3;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    /* CAPTCHA Styling */
+    .captcha-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .captcha-box {
+      font-size: 20px;
+      font-weight: bold;
+      background: #eee;
+      padding: 10px;
+      display: inline-block;
+      border-radius: 5px;
+    }
+
+    .refresh-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body onload="refreshCaptcha()">
+  <div class="main-container">
+    
+    <div class="logo-container">
+      <img src="{% static 'images/logo.png' %}" alt="Company Logo">
+    </div>
+
+    <div class="title-container">Login</div>
+
+    <!-- Display error messages -->
+    {% if messages %}
+      <div>
+        {% for message in messages %}
+          <p class="error-message">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="info-container">
+      <form method="post" onsubmit="return validateCaptcha()">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label>Email ID of Team Leader / Founder</label>
+          <input type="email" name="email" value="{{ form.email.value|default_if_none:'' }}" required>
+          {% if form.email.errors %}
+            <p class="error-message">{{ form.email.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>Enter Password</label>
+          <input type="password" name="password" autocomplete="off" required>
+          {% if form.password.errors %}
+            <p class="error-message">{{ form.password.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- CAPTCHA Section -->
+        <div class="form-group">
+          <label>Enter Captcha</label>
+          <div class="captcha-container">
+            <span id="captcha" class="captcha-box"></span>
+            <button type="button" class="refresh-btn" onclick="refreshCaptcha()">↻</button>
+          </div>
+          <input type="text" name="captcha_input" id="captcha_input" required>
+          <p class="error-message" id="captcha-error" style="display: none;">Incorrect Captcha</p>
+        </div>
+      
+        <button type="submit" class="blue-button login-btn">Login</button>
+        
+        <div class="bottom-buttons">
+          <a href="{% url 'choose_role' %}">Register</a>
+          <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Function to generate a random 4-digit CAPTCHA
+    function refreshCaptcha() {
+      document.getElementById('captcha').innerText = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('captcha-error').style.display = "none"; // Hide error message on refresh
+    }
+
+    // Function to validate CAPTCHA input
+    function validateCaptcha() {
+      let captchaText = document.getElementById('captcha').innerText;
+      let userCaptcha = document.getElementById('captcha_input').value;
+
+      if (captchaText !== userCaptcha) {
+        document.getElementById('captcha-error').style.display = "block";
+        return false; // Prevent form submission
+      }
+      return true; // Allow form submission
+    }
+  </script>
+
+</body>
+</html>

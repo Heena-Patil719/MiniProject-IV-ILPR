@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Evaluations</title>
+    <style>
+        body {
+            background-color: #f8f3f8; /* soft lavender */
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            background-color: #4C1D3D;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            text-align: center;
+        }
+        p {
+            text-align: center;
+            margin-top: 10px;
+            color: #4C1D3D;
+        }
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 2rem auto;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #4a164f;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f0f9;
+        }
+        tr:hover {
+            background-color: #f0e6f0;
+        }
+        .btn {
+            padding: 6px 12px;
+            background-color: gray;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: not-allowed;
+        }
+        .btn.active {
+            background-color: #4C1D3D;
+            cursor: pointer;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #4C1D3D;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #3a1530;
+        }
+    </style>
+</head>
+<body>
+    <h2>Teacher Evaluation - All Projects</h2>
+    <p>Logged-in Teacher: <strong>{{ logged_in_teacher_name }}</strong></p>
+
+    <!-- Back Button -->
+    <a href="{% url 'teacher_dashboard' %}" class="back-btn">Back to Dashboard</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sr. No.</th>
+                <th>Project Name</th>
+                <th>Branch</th>
+                <th>Team Leader</th>
+                <th>Mentor</th>
+                <th>Evaluation Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% with 0 as count %}
+                {% for project in idea_projects %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.branch }}</td>
+                        <td>{{ project.team_leader_name }}</td>
+                        <td>{{ project.mentor }}</td>
+                        <td>
+                            {% if project.mentor == logged_in_teacher_name %}
+                                {% if project.evaluated %}
+                                    <a href="{% url 'evaluation_details' project_type='idea' project_id=project.id %}">View evaluation</a>
+                                {% else %}
+                                    <a href="{% url 'evaluated_project' project_type='idea' project_id=project.id %}">Evaluate project</a>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn" disabled>Not Your Project</button>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if project.mentor == logged_in_teacher_name %}
+                                {% if project.evaluated %}
+                                    <a href="{% url 'evaluation_details' project_type='idea' project_id=project.id %}" class="btn active">Review evaluation</a>
+                                {% else %}
+                                    <a href="{% url 'evaluated_project' project_type='idea' project_id=project.id %}" class="btn active">Evaluate project</a>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn" disabled>Not Your Project</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                {% for project in prototype_projects %}
+                    <tr>
+                        <td>{{ forloop.counter|add:idea_projects|length }}</td>
+                        <td>{{ project.prototype_title }}</td>
+                        <td>{{ project.branch }}</td>
+                        <td>{{ project.team_leader_name }}</td>
+                        <td>{{ project.mentor }}</td>
+                        <td>
+                            {% if project.mentor == logged_in_teacher_name %}
+                                {% if project.evaluated %}
+                                    <a href="{% url 'evaluation_details' project_type='prototype' project_id=project.id %}">View evaluation</a>
+                                {% else %}
+                                    <a href="{% url 'evaluated_project' project_type='prototype' project_id=project.id %}">Evaluate project</a>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn" disabled>Not Your Project</button>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if project.mentor == logged_in_teacher_name %}
+                                {% if project.evaluated %}
+                                    <a href="{% url 'evaluation_details' project_type='prototype' project_id=project.id %}" class="btn active">Review evaluation</a>
+                                {% else %}
+                                    <a href="{% url 'evaluated_project' project_type='prototype' project_id=project.id %}" class="btn active">Evaluate project</a>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn" disabled>Not Your Project</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                {% for project in startup_projects %}
+                    <tr>
+                        <td>{{ forloop.counter|add:idea_projects|length|add:prototype_projects|length }}</td>
+                        <td>{{ project.startup_name }}</td>
+                        <td>{{ project.branch }}</td>
+                        <td>{{ project.team_leader_name }}</td>
+                        <td>{{ project.mentor }}</td>
+                        <td>
+                            {% if project.mentor == logged_in_teacher_name %}
+                                {% if project.evaluated %}
+                                    <a href="{% url 'evaluation_details' project_type='startup' project_id=project.id %}">View evaluation</a>
+                                {% else %}
+                                    <a href="{% url 'evaluated_project' project_type='startup' project_id=project.id %}">Evaluate project</a>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn" disabled>Not Your Project</button>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if project.mentor == logged_in_teacher_name %}
+                                {% if project.evaluated %}
+                                    <a href="{% url 'evaluation_details' project_type='startup' project_id=project.id %}" class="btn active">Review evaluation</a>
+                                {% else %}
+                                    <a href="{% url 'evaluated_project' project_type='startup' project_id=project.id %}" class="btn active">Evaluate project</a>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn" disabled>Not Your Project</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endwith %}
+        </tbody>
+    </table>
+</body>
+</html>

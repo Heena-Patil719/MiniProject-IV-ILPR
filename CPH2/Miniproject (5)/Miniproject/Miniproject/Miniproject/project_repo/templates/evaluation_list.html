@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluate Project</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+    }
+
+    .form-container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      background-color: royalblue;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #1e3fa5;
+    }
+
+    @media screen and (max-width: 600px) {
+      .form-container {
+        margin: 10px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Evaluate Project</h2>
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Example form field -->
+      <div class="form-group">
+        <label for="criterion1">Criterion 1</label>
+        <select name="criterion1" id="criterion1">
+          {% for i in 0|to:11 %}
+            <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Repeat form groups for other fields -->
+      {{ form.as_p }} <!-- optional if you’re using Django’s form -->
+
+      <button type="submit">Submit Evaluation</button>
+    </form>
+  </div>
+</body>
+</html>

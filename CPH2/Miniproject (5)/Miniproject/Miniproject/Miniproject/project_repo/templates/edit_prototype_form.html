@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Prototype{% endblock %}
+
+{% block content %}
+<div class="form-container" style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <h2>Edit Prototype</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="prototype_title">Prototype Title:</label>
+        <input type="text" name="prototype_title" id="prototype_title" value="{{ prototype.prototype_title }}" required>
+        <br><br>
+        
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" required>{{ prototype.description }}</textarea>
+        <br><br>
+        
+        <label for="branch">Branch:</label>
+        <input type="text" name="branch" id="branch" value="{{ prototype.branch }}" required>
+        <br><br>
+        
+        <label for="domain">Domain:</label>
+        <input type="text" name="domain" id="domain" value="{{ prototype.domain }}" required>
+        <br><br>
+        
+        <label for="innovation_type">Innovation Type:</label>
+        <input type="text" name="innovation_type" id="innovation_type" value="{{ prototype.innovation_type }}" required>
+        <br><br>
+
+        <label for="problem">Problem:</label>
+        <textarea name="problem" id="problem" required>{{ prototype.problem }}</textarea>
+        <br><br>
+        
+        <label for="solution">Solution:</label>
+        <textarea name="solution" id="solution" required>{{ prototype.solution }}</textarea>
+        <br><br>
+
+        <label for="features">Features:</label>
+        <textarea name="features" id="features" required>{{ prototype.features }}</textarea>
+        <br><br>
+        
+        <label for="difference">Difference:</label>
+        <textarea name="difference" id="difference" required>{{ prototype.difference }}</textarea>
+        <br><br>
+
+        <label for="team_size">Team Size:</label>
+        <input type="number" name="team_size" id="team_size" value="{{ prototype.team_size }}" required>
+        <br><br>
+        
+        <label for="status_level">Status Level:</label>
+        <select name="status_level" id="status_level" required>
+            <option value="1" {% if prototype.status_level == 1 %}selected{% endif %}>1</option>
+            <option value="2" {% if prototype.status_level == 2 %}selected{% endif %}>2</option>
+            <option value="3" {% if prototype.status_level == 3 %}selected{% endif %}>3</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: green;
+            font-size: 2em;
+        }
+        p {
+            font-size: 1.2em;
+            color: #333;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Submission Successful!</h1>
+        <p>Your startup information has been successfully submitted. Thank you for your submission!</p>
+        {% if video_url %}
+            <p><strong>Watch Your Innovation Video:</strong></p>
+            <a href="{{ video_url }}" target="_blank" class="video-link">Click here to watch</a>
+        {% endif %}
+        <a href="{% url 'student_dashboard' %}" class="btn">Go to Home</a>
+    </div>
+</body>
+</html>

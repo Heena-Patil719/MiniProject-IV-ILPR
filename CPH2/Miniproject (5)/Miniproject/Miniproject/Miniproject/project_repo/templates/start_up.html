@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Form</title>
+    <style>
+        body {
+            background-color: #FA9591;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            background-color: #85264E;
+            padding: 20px;
+            margin: 0;
+            border-radius: 10px 10px 0 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+            height: 45px;
+        }
+        textarea {
+            height: 40px;
+            resize: none;
+            overflow: hidden;
+        }
+        .btn {
+            background-color: #85264E;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #85264E;
+        }
+        .char-counter {
+            text-align: right;
+            font-size: 14px;
+            color: gray;
+            font-weight: bold;
+        }
+        /* Error styling */
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        /* Pop-up styles */
+        #popup-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+        }
+        #popup-message .message {
+            margin-bottom: 20px;
+        }
+        #popup-message .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        #popup-message button {
+            background: #85264E;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #popup-message button.cancel {
+            background: #FF5733;
+        }
+    </style>
+    <script>
+        // Function to validate email
+        function validateEmail(inputField, errorField) {
+            let email = inputField.value;
+            let errorMessage = document.getElementById(errorField);
+            let validDomain = "@gst.sies.edu.in";
+            if (!email.endsWith(validDomain)) {
+                errorMessage.textContent = "Email ID should be example@gst.sies.edu.in only.";
+                return false;
+            } else {
+                errorMessage.textContent = "";
+                return true;
+            }
+        }
+
+        // Function to generate team member fields dynamically
+        function generateTeamFields() {
+            let count = document.getElementById('team-count').value;
+            let container = document.getElementById('team-members');
+            container.innerHTML = "";
+            for (let i = 1; i <= count; i++) {
+                let div = document.createElement("div");
+                div.classList.add("form-group", "team-member");
+                div.innerHTML = `
+                    <label>Team Member ${i} Name:</label>
+                    <input type="text" name="team_member_${i}_name" required>
+                    <label>Team Member ${i} Email:</label>
+                    <input type="email" name="team_member_${i}_email" required oninput="validateEmail(this, 'team-member-${i}-email-error')">
+                    <div id="team-member-${i}-email-error" class="error"></div>
+                    <label>Team Member ${i} ID Card:</label>
+                    <input type="file" name="team_member_${i}_id_card" accept=".jpg, .png, .pdf" required>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // Function to validate YouTube and Google Drive URL
+        function validateVideoURL() {
+            let videoUrl = document.getElementById('video_url').value;
+            let videoError = document.getElementById('video-error');
+            let youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/;
+            let drivePattern = /^(https?:\/\/)?(www\.)?drive\.google\.com\/file\/d\//;
+            if (videoUrl && !(youtubePattern.test(videoUrl) || drivePattern.test(videoUrl))) {
+                videoError.textContent = "Please enter a valid YouTube or Google Drive link.";
+                return false;
+            } else {
+                videoError.textContent = "";
+                return true;
+            }
+        }
+
+        // Function to update character counter
+        function updateCounter(textarea, counterId) {
+            let maxLength = 1000;
+            let remaining = maxLength - textarea.value.length;
+            document.getElementById(counterId).textContent = remaining + " characters remaining";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const popupMessage = document.getElementById("popup-message");
+            const startupForm = document.getElementById("startupForm");
+
+            // Handle form submission
+            startupForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                // Validate Team Leader Email
+                let teamLeaderEmailInput = document.querySelector('input[name="team_leader_email"]');
+                let teamLeaderEmailError = document.getElementById("team-leader-email-error");
+                if (!validateEmail(teamLeaderEmailInput, "team-leader-email-error")) {
+                    alert("Please use an email ending with @gst.sies.edu.in for the Team Leader.");
+                    return;
+                }
+
+                // Validate Team Member Emails
+                let teamMemberEmailInputs = document.querySelectorAll('input[name^="team_member_"][name$="_email"]');
+                let isValid = true;
+                teamMemberEmailInputs.forEach(input => {
+                    let errorElement = document.getElementById(`team-member-${input.name.split("_")[2]}-email-error`);
+                    if (!validateEmail(input, errorElement.id)) {
+                        isValid = false;
+                    }
+                });
+                if (!isValid) {
+                    alert("Please use emails ending with @gst.sies.edu.in for all Team Members.");
+                    return;
+                }
+
+                // Validate Video URL
+                if (!validateVideoURL()) {
+                    alert("Please enter a valid YouTube or Google Drive link.");
+                    return;
+                }
+
+                // Show confirmation pop-up
+                popupMessage.style.display = "block";
+            });
+
+            // Confirm submission
+            document.getElementById("confirm-submission").onclick = function () {
+                popupMessage.style.display = "none";
+                alert("Startup information submitted successfully!");
+                startupForm.submit();
+            };
+
+            // Cancel submission
+            document.getElementById("cancel-submission").onclick = function () {
+                popupMessage.style.display = "none";
+            };
+
+            // Fetch mentors
+            fetch("/api/get_teachers/")
+                .then(response => response.json())
+                .then(data => {
+                    const dropdown = document.getElementById("mentor");
+                    dropdown.innerHTML = '<option value="">Select Mentor</option>';
+                    data.forEach(teacher => {
+                        const option = document.createElement("option");
+                        option.value = teacher.id;
+                        option.textContent = teacher.name;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error("Failed to load mentors:", error);
+                    const dropdown = document.getElementById("mentor");
+                    dropdown.innerHTML = '<option value="">Error loading mentors</option>';
+                });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Startup/Venture Information Form</h1>
+    <form id="startupForm" method="POST" enctype="multipart/form-data" action="{% url 'submit_business' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="startup_name">Startup/Venture Name *</label>
+            <textarea id="startup_name" name="startup_name" required style="height: 40px; overflow: hidden;"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="title">Title / Name of the start-up*</label>
+            <input type="text" id="title" name="title" maxlength="20" required>
+        </div>
+        <div class="form-group">
+            <label for="branch">Branch<span>*</span></label>
+            <select name="branch" id="branch" required>
+                <option value="" disabled selected>Select your branch</option>
+                <option value="Artificial Intelligence & Data Science (AIDS)">Artificial Intelligence & Data Science (AIDS)</option>
+                <option value="Artificial Intelligence & Machine Learning (AIML)">Artificial Intelligence & Machine Learning (AIML)</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="Computer Engineering">Computer Engineering</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Status Level</label>
+            <div style="display: flex; gap: 40px; align-items: center;">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="status_level" value="1" required> 1
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="status_level" value="2"> 2
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="status_level" value="3"> 3
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="website">Website of Startup (optional)</label>
+            <input type="url" id="website" name="website">
+        </div>
+        <div class="form-group">
+            <label for="registration">Startup/Venture Registered as *</label>
+            <textarea id="registration" name="registration" maxlength="1000" oninput="updateCounter(this, 'registration-counter')" required></textarea>
+            <div id="registration-counter" class="char-counter">1000 characters remaining</div>
+        </div>
+        <div class="form-group">
+            <label for="key_innovation">Name a Key Innovation which is Core to the Startup *</label>
+            <textarea id="key_innovation" name="key_innovation" maxlength="1000" oninput="updateCounter(this, 'key-innovation-counter')" required></textarea>
+            <div id="key-innovation-counter" class="char-counter">1000 characters remaining</div>
+        </div>
+        <div class="form-group">
+            <label for="incubation_year">Year of Started Receiving Pre-incubation/Incubation Support for the Development of Innovation-Startup from the Institute (FY) *</label>
+            <input type="number" id="incubation_year" name="incubation_year" required>
+        </div>
+        <div class="form-group">
+            <label for="innovation_development">The Key Innovation which is Core to your Startup was Developed as *</label>
+            <textarea id="innovation_development" name="innovation_development" maxlength="1000" oninput="updateCounter(this, 'innovation-development-counter')" required></textarea>
+            <div id="innovation-development-counter" class="char-counter">1000 characters remaining</div>
+        </div>
+        <div class="form-group">
+            <label for="sector">The Sector/Domain of Focus of the Innovation/Startup *</label>
+            <textarea id="sector" name="sector" maxlength="1000" oninput="updateCounter(this, 'sector-counter')" required></textarea>
+            <div id="sector-counter" class="char-counter">1000 characters remaining</div>
+        </div>
+        <div class="form-group">
+            <label for="innovation_type">Choose the Type of Innovation *</label>
+            <select id="innovation_type" name="innovation_type" required>
+                <option value="">Select an option</option>
+                <option value="product">Product</option>
+                <option value="service">Service</option>
+                <option value="process">Process</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="video_url">Youtube/Google Drive link of Innovation *</label>
+            <input type="url" id="video_url" name="video_url" required>
+            <div id="video-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="innovation_image">Innovation Photograph PDF (max file size 200 MB) *</label>
+            <input type="file" id="innovation_image" name="innovation_image" accept=".pdf" required>
+        </div>
+        <div class="form-group">
+            <label for="mentor">Mentor:</label><br>
+            <select name="mentor" id="mentor" required>
+                <option value="">Loading mentors...</option>
+            </select><br><br>
+        </div>
+        <div class="form-group">
+            <label>Team Leader Name</label>
+            <input type="text" name="team_leader_name" required>
+        </div>
+        <div class="form-group">
+            <label>Team Leader Email *</label>
+            <input type="email" name="team_leader_email" required oninput="validateEmail(this, 'team-leader-email-error')">
+            <div id="team-leader-email-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label>Team Leader ID Card (JPG, PNG, PDF max 2MB)</label>
+            <input type="file" name="team_leader_id_card" accept=".jpg, .png, .pdf" required>
+        </div>
+        <div class="form-group">
+            <label>Number of Team Members</label>
+            <input type="number" id="team-count" name="team_count" min="1" max="10" required onchange="generateTeamFields()">
+        </div>
+        <div id="team-members"></div>
+        <button class="btn" type="submit" name="action" value="save_next">Save and Next</button>
+    </form>
+    <!-- Pop-up Message -->
+    <div id="popup-message">
+        <div class="message">Are you sure you want to submit the startup information?</div>
+        <div class="buttons">
+            <button id="confirm-submission">Confirm</button>
+            <button id="cancel-submission" class="cancel">Cancel</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

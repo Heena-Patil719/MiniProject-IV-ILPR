@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluation Details</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom, #4C1D3D, #FFBC95);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #4C1D3D;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 25px;
+            color: #4C1D3D;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            background-color: #f6f6f6;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 5px solid #4C1D3D;
+            font-weight: bold;
+        }
+
+        .marks-total {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .marks-avg {
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #4C1D3D;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        a:hover {
+            background-color: #3a142e;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Evaluation Details</h1>
+
+        <p><strong>Project Name:</strong> {{ evaluation.project_name }}</p>
+        <p><strong>Team Leader:</strong> {{ evaluation.team_leader_name }}</p>
+        <p><strong>Mentor:</strong> {{ evaluation.mentor_name }}</p>
+        <p><strong>Project Type:</strong> {{ evaluation.project_type|capfirst }}</p>
+
+        <h2>Marks:</h2>
+        <ul>
+            <li>Quality of Problems: {{ evaluation.quality_of_problems }}</li>
+            <li>Awareness of Background: {{ evaluation.awareness_of_background }}</li>
+            <li>Technique Justification: {{ evaluation.technique_justification }}</li>
+            <li>Planning & Scheduling: {{ evaluation.planning_scheduling }}</li>
+            <li>Communication Clarity: {{ evaluation.communication_clarity }}</li>
+        </ul>
+
+        <p class="marks-total"><strong>Total Marks:</strong> {{ evaluation.total_marks }}</p>
+        <h4>Average Marks: 
+            {% if average_marks %}
+                {{ average_marks }}
+            {% else %}
+                No average calculated yet
+            {% endif %}
+        </h4>
+
+        <a href="{% url 'teacher_evaluations' %}">← Back to Projects</a>
+    </div>
+</body>
+</html>

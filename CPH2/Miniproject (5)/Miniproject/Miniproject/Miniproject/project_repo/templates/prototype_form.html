@@ -1,0 +1,354 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prototype Submission</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #FA9591, #FFFFFF);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            background: #85264E;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        input, textarea, select {
+            width: 100%;
+            height: 45px;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 120px;
+        }
+        .btn {
+            background: #85264E;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #85264E;
+        }
+        .char-counter {
+            text-align: right;
+            font-size: 14px;
+            color: gray;
+            margin-top: 3px;
+            font-weight: bold;
+        }
+        input[type="radio"] {
+            transform: scale(1.5); /* Adjust the scaling factor as needed */
+            margin-right: 5px;
+        }
+    </style>
+    <script>
+        function updateCounter(textarea, counterId) {
+            let maxLength = 1000;
+            let remaining = maxLength - textarea.value.length;
+            document.getElementById(counterId).textContent = remaining + " characters remaining";
+        }
+
+        function generateTeamFields() {
+            let count = document.getElementById('team-count').value;
+            let container = document.getElementById('team-members');
+            container.innerHTML = "";
+
+            for (let i = 1; i <= count; i++) {
+                let div = document.createElement("div");
+                div.classList.add("form-group");
+                div.innerHTML = `
+                    <label>Team Member ${i} Name:</label>
+                    <input type="text" name="team_member_${i}_name" required>
+                    <label>Team Member ${i} Email:</label>
+                    <input type="email" name="team_member_${i}_email" required>
+                    <label>Team Member ${i} ID Card:</label>
+                    <input type="file" name="team_member_${i}_id_card" accept=".jpg, .png, .pdf" required>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function populateAcademicYears() {
+            const dropdown = document.getElementById('academic_year');
+            dropdown.innerHTML = '<option value="" disabled selected>Select Academic Year</option>';
+            let currentYear = new Date().getFullYear();
+
+            for (let i = 0; i < 4; i++) {
+                let startYear = currentYear - i;
+                let endYear = startYear + 1;
+                let option = document.createElement('option');
+                option.value = `${startYear}-${endYear}`;
+                option.textContent = `${startYear}-${endYear}`;
+                dropdown.appendChild(option);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', populateAcademicYears);
+
+        function validateVideoURL(event) {
+            let videoUrl = document.getElementById('video_url').value;
+            let videoError = document.getElementById('video-error');
+
+            // Regular expressions for YouTube and Google Drive URLs
+            let youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/;
+            let drivePattern = /^(https?:\/\/)?(www\.)?drive\.google\.com\/file\/d\//;
+
+            if (videoUrl && !(youtubePattern.test(videoUrl) || drivePattern.test(videoUrl))) {
+                videoError.textContent = "Please enter a valid YouTube or Google Drive link.";
+                event.preventDefault(); // Prevent form submission
+            } else {
+                videoError.textContent = ""; // Clear error if valid
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+    fetch("/get-teachers/")
+        .then(response => response.json())
+        .then(data => {
+            const mentorSelect = document.getElementById("mentor");
+            mentorSelect.innerHTML = '<option value="" disabled selected>Select a Mentor</option>';
+            data.forEach(teacher => {
+                const option = document.createElement("option");
+                option.value = teacher.id;
+                option.textContent = teacher.name;
+                mentorSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching teachers:", error);
+            const mentorSelect = document.getElementsByName("mentor");
+            mentorSelect.innerHTML = '<option value="" disabled selected>Failed to load mentors</option>';
+        });
+});
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form id="prototypeForm" method="POST" enctype="multipart/form-data" action="{% url 'submit_prototype' %}">
+            {% csrf_token %}
+            <h1>Prototype Submission</h1>
+
+            <div class="form-group">
+                <label>Prototype Title</label>
+                <input type="text" name="prototype_title" required>
+            </div>
+
+            <div class="form-group">
+                <label>Develop as part of</label>
+                <select name="develop_as_part" required>
+                    <option value="">Select an Option</option>
+                    <option value="academic_requirement">Academic Requirement/Study Project</option>
+                    <option value="academic_research">Academic Research Assignment/Industry Sponsored Project</option>
+                    <option value="independent_assignment">Independent Assignment/Non-academic Study Project</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Title of Project</label>
+                <input type="text" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label>Academic Year</label>
+                <select id="academic_year" name="academic_year" required>
+                    <option value="" disabled selected>Select Academic Year</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="branch">Branch<span>*</span></label>
+                <select name="branch" id="branch" required>
+                    <option value="" disabled selected>Select your branch</option>
+                    <option value="Artificial Intelligence & Data Science (AIDS)">Artificial Intelligence & Data Science (AIDS)</option>
+                    <option value="Artificial Intelligence & Machine Learning (AIML)">Artificial Intelligence & Machine Learning (AIML)</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Computer Engineering">Computer Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="domain">Domain</label>
+                <select id="domain" name="domain" required>
+                    <option value="">Select a Domain</option>
+                    <option value="IOT">IoT</option>
+                    <option value="website">Website</option>
+                    <option value="app">App Development</option>
+                    <option value="aiml">AI/ML</option>
+                    <option value="aids">AIDS (Artificial Intelligence & Data Science)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="innovation_type">Innovation Type *</label>
+                <select id="innovation_type" name="innovation_type" required>
+                    <option value="" disabled selected>Select Innovation Type</option>
+                    <option value="product">Product</option>
+                    <option value="service">Service</option>
+                    <option value="process">Process</option>
+                </select>
+            </div>
+            
+            
+            
+            <div class="form-group">
+                <label>Status Level</label>
+                <div style="display: flex; gap: 40px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="radio" name="status_level" value="1" required> 1
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="radio" name="status_level" value="2"> 2
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="radio" name="status_level" value="3"> 3
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Define the Problem</label>
+                <textarea name="problem" rows="3" maxlength="1000" oninput="updateCounter(this, 'problem-counter')" required></textarea>
+                <div id="problem-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+
+            <div class="form-group">
+                <label>Describe the Solution</label>
+                <textarea name="solution" rows="3" maxlength="1000" oninput="updateCounter(this, 'solution-counter')" required></textarea>
+                <div id="solution-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+
+            <div class="form-group">
+                <label>Unique Features</label>
+                <textarea name="features" rows="3" maxlength="1000" oninput="updateCounter(this, 'features-counter')" required></textarea>
+                <div id="features-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+
+            <div class="form-group">
+                <label>How is it Different?</label>
+                <textarea name="difference" rows="3" maxlength="1000" oninput="updateCounter(this, 'difference-counter')" required></textarea>
+                <div id="difference-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+
+            <div class="form-group">
+                <label>Video URL (YouTube or Google Drive)</label>
+                <input type="url" id="video_url" name="video_url" required>
+                <span id="video-error" style="color: red; font-size: 14px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Upload Prototype Files (JPG, PNG, PDF max 200MB)</label>
+                <input type="file" name="prototype_files" accept=".jpg, .png, .pdf">
+            </div>
+
+            <label for="mentor">Mentor</label>
+            <select id="mentor" name="mentor" class="form-select">
+                <option value="" disabled selected>Loading mentors...</option>
+            </select>
+            
+            <div class="form-group">
+                <label>Team Leader Name</label>
+                <input type="text" name="team_leader_name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Team Leader Email</label>
+                <input type="email" name="team_leader_email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Team Leader ID Card (JPG, PNG, PDF max 2MB)</label>
+                <input type="file" name="team_leader_id_card" accept=".jpg, .png, .pdf" required>
+            </div>
+
+            <div class="form-group">
+                <label>Number of Team Members</label>
+                <input type="number" id="team-count" name="team_count" min="1" max="10" required onchange="generateTeamFields()">
+            </div>
+
+            <div id="team-members"></div>
+
+            <button class="btn" type="submit">Save and Next</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("prototypeForm").addEventListener("submit", function (event) {
+                let idCardFile = document.getElementById("team_leader_id_card").files[0];
+                let uploadFile = document.getElementById("prototype_files").files[0];
+        
+                // Validate ID Card file (max 2MB)
+                if (idCardFile && idCardFile.size > 2 * 1024 * 1024) { // 2MB
+                    alert("ID Card file should not exceed 2MB!");
+                    event.preventDefault();
+                    return;
+                }
+        
+                // Validate General PDF Upload (max 200MB)
+                if (uploadFile && uploadFile.size > 200 * 1024 * 1024) { // 200MB
+                    alert("Uploaded PDF file should not exceed 200MB!");
+                    event.preventDefault();
+                    return;
+                }
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+    fetch("/get-teachers/")
+        .then(response => response.json())
+        .then(data => {
+            const mentorSelect = document.getElementById("mentor");
+            mentorSelect.innerHTML = '<option value="" disabled selected>Select a Mentor</option>';
+            data.forEach(teacher => {
+                const option = document.createElement("option");
+                option.value = teacher.id;
+                option.textContent = teacher.name;
+                mentorSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching teachers:", error);
+            const mentorSelect = document.getElementById("mentor");
+            mentorSelect.innerHTML = '<option value="" disabled selected>Failed to load mentors</option>';
+        });
+});
+
+
+
+    </script>
+</body>
+</html>

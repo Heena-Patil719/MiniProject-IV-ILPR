@@ -1,0 +1,42 @@
+{% extends "base_teacher.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container" style="display: flex; justify-content: center; gap: 20px; margin: 40px auto; max-width: 90%; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);">
+
+    <!-- Teacher Information Container -->
+    <div style="flex: 1; background: #FAF3E0; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); font-size: 1.5rem;">
+        <h1 style="text-align: center; color: #4C1D3D;">Teacher Information</h1>
+        <hr style="margin: 20px 0; border: 1px solid #ccc;">
+
+        <!-- Profile Information -->
+        <p><strong>Name:</strong> {{ teacher.get_first_name }} {{ teacher.get_last_name }}</p>
+        <p><strong>ID:</strong> {{ teacher.id }}</p>
+        <p><strong>Branch:</strong> {{ teacher.branch }}</p>
+        <p><strong>Email ID:</strong> {{ teacher.email }}</p>
+        <p><strong>Phone Number:</strong> {{ teacher.phone_number }}</p>
+
+        <!-- Mentor List -->
+        <h2 style="margin-top: 20px; color: #4C1D3D;">Mentor(s) Associated with Projects:</h2>
+        <ul>
+            {% for mentor in mentors %}
+            <li>{{ mentor }}</li>
+            {% empty %}
+            <li>No mentors found.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Teacher ID Card Container -->
+    <div style="flex: 1; background: #FFF5EB; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center;">
+        <h1 style="color: #4C1D3D; margin-bottom: 20px;">Teacher ID Card</h1>
+        {% if teacher.id_card %}
+        <img src="{{ teacher.id_card.url }}" alt="Teacher ID Card" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);">
+        {% else %}
+        <p style="color: #C70039;">No ID card available</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+<div class="project-container" style="background-color: white; padding: 50px; border-radius: 10px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); max-width: 95%; margin: 30px auto;">
+    <h1 style="text-align: center; font-size: 2.5rem; font-weight: bold; color: #85264E;">Projects</h1>
+    <!-- Tabs -->
+    <div class="tabs" style="text-align: center; margin-bottom: 30px;">
+        <a href="javascript:void(0);" onclick="showSection('idea-section')" class="tab-link active" style="font-size: 1.5rem; font-weight: bold; color: #007BFF; text-decoration: none; margin-right: 15px;">Idea / PoC Repository</a>
+        <a href="javascript:void(0);" onclick="showSection('prototype-section')" class="tab-link" style="font-size: 1.5rem; font-weight: bold; color: #007BFF; text-decoration: none; margin-right: 15px;">Innovation / Prototype Repository</a>
+        <a href="javascript:void(0);" onclick="showSection('business-section')" class="tab-link" style="font-size: 1.5rem; font-weight: bold; color: #007BFF; text-decoration: none;">Business Model / Startup</a>
+    </div>
+    <!-- Idea Section -->
+    <div id="idea-section" class="table-container" style="background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); display: block;">
+        <h2 style="text-align: left; font-size: 2rem; font-weight: bold; color: #85264E;">Idea / PoC Repository</h2>
+        <a href="{% url 'idea_form' %}" class="add-button" style="display: inline-block; background-color: #007BFF; color: white; padding: 15px 30px; font-size: 1.5rem; font-weight: bold; border-radius: 5px; text-decoration: none; margin-bottom: 20px;">Add Idea/PoC</a>
+        <table style="width: 100%; border-collapse: collapse; font-size: 1.2rem; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #85264E; color: white;">
+                    <th style="padding: 15px; border: 2px solid #ddd;">Sr. No.</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Title</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Domain</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Branch</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Mentor</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for idea in ideas %}
+                <tr>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ forloop.counter }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">
+                        <a href="javascript:void(0);" onclick="showDetails({{ idea.id }})" style="color: #85264E; font-weight: bold; text-decoration: none;">{{ idea.title }}</a>
+                    </td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ idea.domain }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ idea.branch }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ idea.mentor }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ idea.status_level }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 15px; border: 2px solid #ddd;">No ideas found for this user.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Prototype Section -->
+    <div id="prototype-section" class="table-container" style="background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); display: none;">
+        <h2 style="text-align: left; font-size: 2rem; font-weight: bold; color: #85264E;">Innovation / Prototype Repository</h2>
+        <a href="{% url 'prototype_form' %}" class="add-button" style="display: inline-block; background-color: #007BFF; color: white; padding: 15px 30px; font-size: 1.5rem; font-weight: bold; border-radius: 5px; text-decoration: none; margin-bottom: 20px;">Add Prototype</a>
+        <table style="width: 100%; border-collapse: collapse; font-size: 1.2rem; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #85264E; color: white;">
+                    <th style="padding: 15px; border: 2px solid #ddd;">Sr. No.</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Prototype Title</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Domain</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Branch</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Mentor</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prototype in prototypes %}
+                <tr>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ forloop.counter }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">
+                        <a href="javascript:void(0);" onclick="showDetails('{{ prototype.id }}', 'prototype')" style="color: #85264E; font-weight: bold; text-decoration: none;">{{ prototype.prototype_title }}</a>
+                    </td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ prototype.domain }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ prototype.branch }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ prototype.mentor }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ prototype.status_level }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 15px; border: 2px solid #ddd;">No prototypes found for this user.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Startup Section -->
+    <div id="business-section" class="table-container" style="background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); display: none;">
+        <h2 style="text-align: left; font-size: 2rem; font-weight: bold; color: #85264E;">Business Model / Startup</h2>
+        <a href="{% url 'start_up' %}" class="add-button" style="display: inline-block; background-color: #480639; color: white; padding: 15px 30px; font-size: 1.5rem; font-weight: bold; border-radius: 5px; text-decoration: none; margin-bottom: 20px;">Add Business/Startup</a>
+        <table style="width: 100%; border-collapse: collapse; font-size: 1.2rem; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #85264E; color: white;">
+                    <th style="padding: 15px; border: 2px solid #ddd;">Sr. No.</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Startup Name</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Sector</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Mentor</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Team Leader</th>
+                    <th style="padding: 15px; border: 2px solid #ddd;">Innovation Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for startup in startups %}
+                <tr>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ forloop.counter }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">
+                        <a href="javascript:void(0);" onclick="showDetails('{{ startup.id }}', 'startup')" style="color: #007BFF; font-weight: bold; text-decoration: none;">{{ startup.startup_name }}</a>
+                    </td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ startup.sector }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ startup.mentor }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ startup.team_leader_name }}</td>
+                    <td style="padding: 15px; border: 2px solid #ddd;">{{ startup.innovation_type }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 15px; border: 2px solid #ddd;">No startups found for this user.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<div id="project-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;">
+    <div style="background: white; margin: 5% auto; padding: 20px; width: 60%; max-height: 80vh; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <a href="#" onclick="closeModal()" style="color: #007BFF; font-weight: bold; text-decoration: none;">Go Back to Projects</a>
+            <a href="#" id="edit-link" style="color: #007BFF; font-weight: bold; text-decoration: none;">Edit Project</a>
+        </div>
+        <!-- Project Title -->
+        <h2 id="modal-title" style="color: #85264E; font-size: 2rem; font-weight: bold; text-align: center;">Project Title</h2>
+        <!-- Modal Content -->
+        <div id="modal-content" style="max-height: 60vh; overflow-y: auto; font-size: 1.2rem; line-height: 1.6;"></div>
+        <!-- Close Button -->
+        <button onclick="closeModal()" style="background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 5px; margin-top: 20px;">Close</button>
+    </div>
+</div>
+<script>
+    // Function to show/hide sections
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.table-container');
+        sections.forEach(section => section.style.display = 'none');
+        const selectedSection = document.getElementById(sectionId);
+        if (selectedSection) selectedSection.style.display = 'block';
+    }
+    function showDetails(projectId, projectType = 'idea') {
+        let url = `/project_details/${projectType}/${projectId}/`; // Adjust URL as per your routing setup
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                let modalContent = document.getElementById('modal-content');
+                let project = data;
+                // Conditional rendering based on projectType
+                let content = '';
+                if (projectType === 'startup') {
+                    // Startup-specific fields
+                    content = `
+                        <p><strong>Startup Name:</strong> ${project.title || 'N/A'}</p>
+                        <p><strong>Sector:</strong> ${project.sector || 'N/A'}</p>
+                        <p><strong>Registration:</strong> ${project.registration || 'N/A'}</p>
+                        <p><strong>Key Innovation:</strong> ${project.key_innovation || 'N/A'}</p>
+                        <p><strong>Innovation Development:</strong> ${project.innovation_development || 'N/A'}</p>
+                        <p><strong>Innovation Type:</strong> ${project.innovation_type || 'N/A'}</p>
+                        <p><strong>Incubation Year:</strong> ${project.incubation_year || 'N/A'}</p>
+                        <p><strong>Status Level:</strong> ${project.status_level || 'N/A'}</p>
+                        <h3>YouTube Link: 
+                            ${project.video_url ? `<a href="${project.video_url}" target="_blank">Watch Video</a>` : 'N/A'}
+                        </h3>
+                        <h3>Uploaded Document: 
+                            ${project.innovation_image ? `<a href="${project.innovation_image}" target="_blank">View Document</a>` : 'N/A'}
+                        </h3>
+                        <h3>Mentor:</h3><p>${project.mentor || 'N/A'}</p>
+                        <h3>Team Leader Details:</h3>
+                        <ul>
+                            <li><strong>Name:</strong> ${project.team_leader_name || 'N/A'}</li>
+                            <li><strong>Email:</strong> ${project.team_leader_email || 'N/A'}</li>
+                            <li><strong>ID Card:</strong> ${project.team_leader_id_card ? `<a href="${project.team_leader_id_card}" target="_blank">View ID</a>` : 'N/A'}</li>
+                        </ul>
+                    `;
+                } else {
+                    // Common fields for Idea and Prototype
+                    content = `
+                        <p><strong>Title:</strong> ${project.title || 'N/A'}</p>
+                        <p><strong>Academic Year:</strong> ${project.academic_year || 'N/A'}</p>
+                        <p><strong>Branch:</strong> ${project.branch || 'N/A'}</p>
+                        <p><strong>Domain:</strong> ${project.domain || 'N/A'}</p>
+                        <p><strong>Innovation Type:</strong> ${project.innovation_type || 'N/A'}</p>
+                        <p><strong>Status Level:</strong> ${project.status_level || 'N/A'}</p>
+                        <h3>Problem:</h3><p>${project.problem || 'N/A'}</p>
+                        <h3>Solution:</h3><p>${project.solution || 'N/A'}</p>
+                        <h3>Features:</h3><p>${project.features || 'N/A'}</p>
+                        <h3>Difference:</h3><p>${project.difference || 'N/A'}</p>
+                        <h3>Mentor:</h3><p>${project.mentor || 'N/A'}</p>
+                        <h3>YouTube Link: 
+                            ${project.video_url ? `<a href="${project.video_url}" target="_blank">Watch Video</a>` : 'N/A'}
+                        </h3>
+                        <h3>Uploaded Document:</h3><p>${project.upload ? `<a href="${project.upload}" target="_blank">View Document</a>` : 'N/A'}</p>
+                        <h3>Team Leader Details:</h3>
+                        <ul>
+                            <li><strong>Name:</strong> ${project.team_leader_name || 'N/A'}</li>
+                            <li><strong>Email:</strong> ${project.team_leader_email || 'N/A'}</li>
+                            <li><strong>ID Card:</strong> ${project.team_leader_id_card ? `<a href="${project.team_leader_id_card}" target="_blank">View ID</a>` : 'N/A'}</li>
+                        </ul>
+                    `;
+                }
+                // Add Team Members Section
+                if (project.team_members && project.team_members.length > 0) {
+                    content += `
+                        <h3>Team Members:</h3>
+                        <ul>
+                            ${project.team_members.map(member => `
+                                <li>
+                                    <strong>Name:</strong> ${member.name || 'N/A'}<br>
+                                    <strong>Email:</strong> ${member.email || 'N/A'}<br>
+                                    <strong>ID Card:</strong> ${member.id_card ? `<a href="${member.id_card}" target="_blank">View ID</a>` : 'N/A'}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                } else {
+                    content += `<p>No team members found.</p>`;
+                }
+                // Populate the modal with content
+                modalContent.innerHTML = content;
+                document.getElementById('modal-title').innerText = project.title; // Set the modal title
+                document.getElementById('project-modal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching project details:', error);
+                alert('Failed to load project details. Please try again.');
+            });
+    }
+    // Function to close the modal
+    function closeModal() {
+        document.getElementById('project-modal').style.display = 'none';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Team Leader / Founder Registration</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Style the title container */
+        .title-container {
+    background-color: maroon;
+    color: white;
+    padding: 15px 30px; /* Balanced padding */
+    text-align: center;
+    font-size: 24px; /* Consistent font size */
+    font-weight: bold;
+    border-radius: 5px;
+    display: block; /* Ensures proper block alignment */
+    width: 90%; /* Reduced width */
+    margin: 0 auto; /* Centers the container */
+}
+
+
+        /* Make labels bold, bigger, and darker */
+        label {
+            font-weight: bold;
+            font-size: 24px;
+            color: #333;
+        }
+
+        label span {
+            color: red;
+            font-size: 24px;
+        }
+
+        /* Uniform size for all input fields, dropdowns, and file input */
+        input, select, textarea {
+    width: 100%;
+    height: 45px; /* Set a consistent height */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+/* Ensure file input matches other fields */
+input[type="file"] {
+    height: 45px; /* Matches other fields */
+    padding: 8px;
+}
+        .form-field {
+    width: 100%; /* Full width */
+    height: 45px; /* Uniform height */
+    margin-bottom: 15px; /* Space between fields */
+    padding: 10px; /* Comfortable padding */
+    box-sizing: border-box; /* Include padding in width */
+    font-size: 16px; /* Consistent font size */
+    border: 1px solid #ccc; /* Neat border */
+    border-radius: 5px; /* Rounded edges */
+}
+
+        /* Fix form spacing */
+        .form-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .gender-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gender-label {
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .gender-group input {
+            transform: scale(1.3); /* Increase size of radio button */
+            margin-right: 5px;
+        }
+
+        /* Style the register button */
+        .blue-button {
+            background-color: maroon; /* Change button color */
+            color: white;
+            font-size: 20px; /* Increase text size */
+            font-weight: bold; /* Make text bold */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Button hover effect */
+        .blue-button:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="title-container">Team Leader / Founder Registration</div>
+
+        <div class="info-container">
+            <form method="post" action="{% url 'register' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Institute<span>*</span></label>
+                    <select name="institute" required>
+                        <option value="" disabled selected hidden>Select Institute</option>
+                        <option value="SIES Graduate School of Technology">SIES Graduate School of Technology</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Name<span>*</span></label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Id<span>*</span></label>
+                    <input type="email" id="email" name="email" required>
+                    <small id="email-error" style="color: red; display: none;">Email must end with @gst.sies.edu.in</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mobile Number <span>*</span></label>
+                    <input type="text" name="mobile" id="mobile" placeholder="Enter Mobile Number" required 
+                           pattern="\d{10}" maxlength="10"
+                           title="Mobile number must be exactly 10 digits"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    
+                    <!-- Error message if number is already registered -->
+                    <p id="mobile-error" style="color: red; font-size: 14px; display: none;">This mobile number is already registered.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="gender-label">Gender<span>*</span></label>
+                    <div class="gender-group">
+                        <input type="radio" id="male" name="gender" value="Male" required>
+                        <label for="male">Male</label>
+
+                        <input type="radio" id="female" name="gender" value="Female">
+                        <label for="female">Female</label>
+
+                        <input type="radio" id="other" name="gender" value="Other">
+                        <label for="other">Other</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="branch">Branch<span>*</span></label>
+                    <select name="branch" id="branch" required>
+                        <option value="" disabled selected>Select your branch</option>
+                        <option value="Artificial Intelligence & Data Science (AIDS)">Artificial Intelligence & Data Science (AIDS)</option>
+                        <option value="Artificial Intelligence & Machine Learning (AIML)">Artificial Intelligence & Machine Learning (AIML)</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                        <option value="Computer Engineering">Computer Engineering</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                    </select>
+                </div>
+
+                
+                
+                <div class="form-group">
+                    <label for="student_id">Student ID/PRN Number<span>*</span></label>
+                    <input type="text" id="student_id" name="student_id" required>
+                    
+                    <!-- PRN Error Message -->
+                    <p id="prn-error" style="color: red; font-size: 14px; display: none;">This PRN number is already registered.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="student_id_file">Upload Student/Employee ID (Max 2MB JPG, PNG)</label>
+                    <input type="file" id="student_id_file" name="student_id_file" accept=".jpg,.jpeg,.png">
+                </div>
+                
+
+                <div class="form-group">
+                    <label for="password">Enter Password<span>*</span></label>
+                    <input type="password" id="password" name="password" required minlength="8"
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                        title="Must contain at least one uppercase, one lowercase, one number, and one special character">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Re-enter Password<span>*</span></label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                    <small id="password-error" style="color: red; display: none;">Passwords do not match</small>
+                </div>
+                
+                <!-- Register Button -->
+                <button class="blue-button" type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("email").addEventListener("input", function () {
+            let email = this.value;
+            let emailPattern = /^[a-zA-Z0-9._%+-]+@gst\.sies\.edu\.in$/;
+            let errorText = document.getElementById("email-error");
+
+            if (!emailPattern.test(email)) {
+                errorText.style.display = "block";
+            } else {
+                errorText.style.display = "none";
+            }
+        });
+
+        document.querySelector("form").addEventListener("submit", function (event) {
+            let email = document.getElementById("email").value;
+            let emailPattern = /^[a-zA-Z0-9._%+-]+@gst\.sies\.edu\.in$/;
+            
+            if (!emailPattern.test(email)) {
+                event.preventDefault(); 
+                alert("Please use an email ending with @gst.sies.edu.in");
+            }
+        });
+
+        document.getElementById("confirm_password").addEventListener("input", function() {
+            let password = document.getElementById("password").value;
+            let confirmPassword = this.value;
+            let errorText = document.getElementById("password-error");
+            
+            if (password !== confirmPassword) {
+                errorText.style.display = "block";
+            } else {
+                errorText.style.display = "none";
+            }
+        });
+
+
+        // New script for mobile number validation
+        document.getElementById("mobile").addEventListener("input", function() {
+            let mobileNumber = this.value;
+            let errorMessage = document.getElementById("mobile-error");
+    
+            if (mobileNumber.length === 10) {
+                fetch(`/validate_mobile/?mobile=${mobileNumber}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            errorMessage.style.display = "block";
+                        } else {
+                            errorMessage.style.display = "none";
+                        }
+                    });
+            } else {
+                errorMessage.style.display = "none";
+            }
+        });
+
+        //validation for prn number
+        document.getElementById("student_id").addEventListener("input", function () {
+        let prnInput = this.value.trim();
+        let prnError = document.getElementById("prn-error");
+
+        if (prnInput !== "") {
+            fetch(`/validate_prn/?prn=${prnInput}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        prnError.style.display = "block"; // Show error
+                    } else {
+                        prnError.style.display = "none"; // Hide error
+                    }
+                });
+        } else {
+            prnError.style.display = "none";
+        }
+    });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Role</title>
+    <style>
+        /* Background gradient */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #4C1D3D, #852E50); /* Gradient similar to sidebar */
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Centered card */
+        .role-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 600px; /* Keep width as it is */
+            height: 500px; /* Reduced height from 600px to 500px */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align items at the top */
+            align-items: center;
+        }
+
+        /* Updated label styling */
+        .role-title {
+            background-color: #4C1D3D; /* Maroon color */
+            color: white;
+            font-size: 26px; /* Larger font */
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 50px; /* Move label upwards with extra space below */
+        }
+
+        /* Role selection layout */
+        .role-selection {
+            display: flex;
+            flex-direction: row; /* Arrange image buttons side by side */
+            justify-content: center;
+            align-items: center;
+            gap: 40px; /* Increased space between buttons */
+        }
+
+        /* Updated image buttons */
+        .role-option img {
+            width: 260px; /* Larger width */
+            height: 260px; /* Larger height */
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin: 0;
+            display: block;
+        }
+
+        .role-option img:hover {
+            transform: scale(1.1); /* Subtle hover effect */
+        }
+
+        /* Bold and larger text for role labels */
+        .role-text {
+            font-size: 26px; /* Increased font size */
+            font-weight: bold; /* Made text bold */
+            margin-top: 20px; /* Add space between image and text labels */
+            text-align: center;
+        }
+
+        /* Updated button styling */
+        .role-button {
+            background-color: #4C1D3D; /* Same maroon as role title */
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px 25px;
+            border-radius: 8px; /* Rounded edges */
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: auto; /* Push the button downward */
+            transition: background-color 0.3s;
+        }
+
+        .role-button:hover {
+            background-color: #852E50; /* Slightly lighter shade on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="role-container">
+        <div class="role-title">Select Your Role</div>
+
+        <div class="role-selection">
+            <!-- Professor -->
+            <div class="role-option">
+                <a href="{% url 'teacher_register' %}">
+                    <img src="{% static 'images/teacher.jpg' %}" alt="Professor">
+                </a>
+                <div class="role-text">Professor</div>
+            </div>
+
+            <!-- Student -->
+            <div class="role-option">
+                <a href="{% url 'register' %}">
+                    <img src="{% static 'images/stud.jpg' %}" alt="Student">
+                </a>
+                <div class="role-text">Student</div>
+            </div>
+        </div>
+
+        <!-- Login-style button -->
+        <button class="role-button">Continue</button>
+    </div>
+</body>
+</html>

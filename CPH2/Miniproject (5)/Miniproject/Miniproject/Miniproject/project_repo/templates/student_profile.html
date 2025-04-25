@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load static %}
+{% block content %}
+<div style="margin: 50px auto; width: 80%; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+    <h2 style="text-align: center; color: #4C1D3D;">Student Profile</h2>
+
+    <table style="width: 100%; margin: 20px auto; border-collapse: collapse;">
+        <tr>
+            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd;">Field</th>
+            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd;">Details</th>
+        </tr>
+        <tr>
+            <td style="padding: 10px;">Name</td>
+            <td style="padding: 10px;">{{ student.name }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;">Student ID</td>
+            <td style="padding: 10px;">{{ student.student_id }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;">Email</td>
+            <td style="padding: 10px;">{{ student.email }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;">Branch</td>
+            <td style="padding: 10px;">{{ student.branch }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;">Institute</td>
+            <td style="padding: 10px;">{{ student.institute }}</td>
+        </tr>
+    </table>
+
+    <!-- Team Leader ID Card Section -->
+    <h3 style="text-align: center; color: #4C1D3D;">Team Leader ID Card</h3>
+    <div style="text-align: center;">
+        {% if displayed_id_card %}
+            <!-- Display ID Card -->
+            <a href="{{ displayed_id_card.url }}" target="_blank">
+                <img src="{{ displayed_id_card.url }}" alt="Team Leader ID Card" style="width: 300px; height: auto; border: 2px solid #ddd; padding: 10px;">
+            </a>
+        {% else %}
+        <a href="#">
+            <img src="{% static 'images/man pic.jpg' %}" alt="Student_id" style="width: 500px; height: 500px; border-radius: 10px;">
+        </a>
+        {% endif %}
+
+        <!-- Debug URL -->
+        <p>URL: {{ displayed_id_card.url }}</p>
+    </div>
+</div>
+{% endblock %}

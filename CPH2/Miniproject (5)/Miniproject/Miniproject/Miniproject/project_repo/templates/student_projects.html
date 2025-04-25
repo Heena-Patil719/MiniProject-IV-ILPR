@@ -1,0 +1,541 @@
+{% load static %}
+{% block content %}
+<!-- Include the Navigation Bar -->
+{% include 'navbar.html' %}
+
+<!-- Main Content -->
+<div class="container">
+    <h1>Student Projects</h1>
+    <!-- Flex Container for Table and Filters -->
+    <div class="flex-container">
+        <!-- Projects Table -->
+        <div class="projects-table">
+            <table class="styled-table">
+                <colgroup>
+                    <col style="width: 8%;">   <!-- Sr. No. -->
+                    <col style="width: 30%;"> <!-- Project Name -->
+                    <col style="width: 15%;"> <!-- Branch -->
+                    <col style="width: 15%;"> <!-- Team Leader -->
+                    <col style="width: 15%;"> <!-- Mentor -->
+                    <col style="width: 17%;"> <!-- Project Type -->
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Project Name</th>
+                        <th>Branch</th>
+                        <th>Team Leader</th>
+                        <th>Mentor</th>
+                        <th>Project Type</th> <!-- New Column for Project Type -->
+                    </tr>
+                </thead>
+                <tbody id="projectsTableBody">
+                    {% for project in projects %}
+                    <tr data-branch="{{ project.branch }}" data-academic-year="{{ project.details.academic_year }}" data-mentor="{{ project.mentor }}" data-project-type="{{ project.type }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <!-- Make project name clickable and styled -->
+                            <a href="#" class="project-name" onclick="openModal({{ forloop.counter0 }})">
+                                {{ project.project_name }}
+                            </a>
+                        </td>
+                        <td>{{ project.branch }}</td>
+                        <td>{{ project.team_leader }}</td>
+                        <td>{{ project.mentor }}</td>
+                        <td>{{ project.type }}</td> <!-- Display Project Type -->
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 15px; border: 2px solid #ddd;">No projects found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Filters Section -->
+        <div class="filters">
+            <h3>Filters</h3>
+            <form id="filterForm">
+                <!-- Branch Filter -->
+                <label for="branchFilter">Branch:</label>
+                <select id="branchFilter" name="branch">
+                    <option value="">All</option>
+                    <option value="Artificial Intelligence & Data Science (AIDS)">Artificial Intelligence & Data Science (AIDS)</option>
+                    <option value="Artificial Intelligence & Machine Learning (AIML)">Artificial Intelligence & Machine Learning (AIML)</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Computer Engineering">Computer Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                </select>
+                <!-- Academic Year Filter -->
+                <label for="yearFilter">Academic Year:</label>
+                <select id="yearFilter" name="academic_year">
+                    <option value="">All</option>
+                    {% for year in academic_years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+                <!-- Mentor Filter -->
+<label for="mentorFilter">Mentor:</label>
+<select id="mentorFilter" name="mentor">
+    <option value="">All</option>
+    {% for mentor in mentors %}
+    <option value="{{ mentor }}">{{ mentor }}</option>
+    {% endfor %}
+</select>
+                </select>
+                <!-- Project Type Filter -->
+                <label for="typeFilter">Project Type:</label>
+                <select id="typeFilter" name="project_type">
+                    <option value="">All</option>
+                    <option value="Idea">Idea</option>
+                    <option value="Prototype">Prototype</option>
+                    <option value="Startup">Startup</option>
+                </select>
+                <!-- Apply Filters Button -->
+                <button type="button" onclick="applyFilters()">Apply Filters</button>
+            </form>
+        </div>
+    </div>
+    <!-- Hidden JSON data for projects -->
+    {{ projects|json_script:"projects-data" }}
+    <!-- Project Details Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Project details will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+    <!-- Team Leader ID Card Modal -->
+    <div id="idCardModal" class="modal">
+        <div id="idCardModalContent">
+            <span class="close" onclick="closeIdCardModal()">&times;</span>
+            <div id="idCardPreview">
+                <!-- ID Card preview will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Load the projects data from the hidden JSON script tag
+    const projects = JSON.parse(document.getElementById('projects-data').textContent);
+
+        // Populate academic years dropdown
+        const populateAcademicYears = () => {
+        const dropdown = document.getElementById('yearFilter'); // Target the correct dropdown ID
+        dropdown.innerHTML = '<option value="" disabled selected>Select Academic Year</option>';
+        let currentYear = new Date().getFullYear();
+        const startYearLimit = 2019; // Set the earliest year to 2019
+
+        for (let year = currentYear; year >= startYearLimit; year--) {
+            let startYear = year;
+            let endYear = year + 1;
+            let option = document.createElement('option');
+            option.value = `${startYear}-${endYear}`;
+            option.textContent = `${startYear}-${endYear}`;
+            dropdown.appendChild(option);
+        }
+    }
+
+    // Call the function when the page loads
+    window.onload = () => {
+        populateAcademicYears();
+    };
+    // Function to apply filters
+    function applyFilters() {
+        const branchFilter = document.getElementById('branchFilter').value;
+        const yearFilter = document.getElementById('yearFilter').value;
+        const mentorFilter = document.getElementById('mentorFilter').value;
+        const typeFilter = document.getElementById('typeFilter').value;
+        // Get all rows
+        const rows = document.querySelectorAll('#projectsTableBody tr');
+        rows.forEach(row => {
+            const branch = row.getAttribute('data-branch');
+            const academicYear = row.getAttribute('data-academic-year');
+            const mentor = row.getAttribute('data-mentor');
+            const projectType = row.getAttribute('data-project-type');
+            // Check if the row matches the filters
+            const matchesBranch = !branchFilter || branch === branchFilter;
+            const matchesYear = !yearFilter || academicYear === yearFilter;
+            const matchesMentor = !mentorFilter || mentor === mentorFilter;
+            const matchesType = !typeFilter || projectType === typeFilter;
+            // Show or hide the row based on the filters
+            if (matchesBranch && matchesYear && matchesMentor && matchesType) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    // Function to open the project details modal
+    function openModal(index) {
+        const project = projects[index];
+        const modal = document.getElementById('projectModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        // Populate modal title
+        modalTitle.textContent = project.project_name;
+        // Populate modal body with project details
+        let detailsHtml = `
+            <p><strong>Title:</strong> ${project.details.title}</p>
+            <p><strong>Academic Year:</strong> ${project.details.academic_year}</p>
+            <p><strong>Domain:</strong> ${project.details.domain}</p>
+            <p><strong>Innovation Type:</strong> ${project.details.innovation_type}</p>
+            <p><strong>Problem:</strong> ${project.details.problem}</p>
+            <p><strong>Solution:</strong> ${project.details.solution}</p>
+            <p><strong>Features:</strong> ${project.details.features}</p>
+            <p><strong>Difference:</strong> ${project.details.difference}</p>
+        `;
+        // Add video URL if available
+        if (project.details.video_url) {
+            detailsHtml += `
+                <p><strong>Video URL:</strong> 
+                    <a href="${project.details.video_url}" target="_blank" class="clickable-link">
+                        Open Video
+                    </a>
+                </p>
+            `;
+        } else {
+            detailsHtml += `<p><strong>Video URL:</strong> N/A</p>`;
+        }
+        // Add team size
+        detailsHtml += `<p><strong>Team Size:</strong> ${project.details.team_size}</p>`;
+        // Add idea description
+        detailsHtml += `<p><strong>Idea Description:</strong> ${project.details.idea_description || 'N/A'}</p>`;
+        // Add project stage
+        detailsHtml += `<p><strong>Project Stage:</strong> ${project.details.project_stage}</p>`;
+        // Add upload link if available
+        if (project.details.upload) {
+            detailsHtml += `
+                <p><strong>Upload:</strong> 
+                    <a href="${project.details.upload}" target="_blank" download class="clickable-link">
+                        Download File
+                    </a>
+                </p>
+            `;
+        } else {
+            detailsHtml += `<p><strong>Upload:</strong> N/A</p>`;
+        }
+        // Add develop as part
+        detailsHtml += `<p><strong>Develop As Part:</strong> ${project.details.develop_as_part}</p>`;
+        // Add team leader email
+        detailsHtml += `<p><strong>Team Leader Email:</strong> ${project.details.team_leader_email}</p>`;
+        // Add team leader ID card link
+        if (project.details.team_leader_id_card) {
+            detailsHtml += `
+                <p><strong>Team Leader ID Card:</strong> 
+                    <a href="#" class="clickable-link" onclick="openIdCardModal('${project.details.team_leader_id_card}')">
+                        View ID Card
+                    </a>
+                </p>
+            `;
+        } else {
+            detailsHtml += `<p><strong>Team Leader ID Card:</strong> N/A</p>`;
+        }
+        // Add team members if available
+        if (project.details.team_members && project.details.team_members.length > 0) {
+            detailsHtml += `<h3>Team Members</h3><ul>`;
+            project.details.team_members.forEach(member => {
+                detailsHtml += `
+                    <li>
+                        <strong>Name:</strong> ${member.name}<br>
+                        <strong>Email:</strong> ${member.email}<br>
+                        <strong>ID Card:</strong> ${member.id_card ? `<a href="${member.id_card}" target="_blank">View ID Card</a>` : 'N/A'}
+                    </li>
+                `;
+            });
+            detailsHtml += `</ul>`;
+        } else {
+            detailsHtml += `<p><strong>Team Members:</strong> N/A</p>`;
+        }
+        modalBody.innerHTML = detailsHtml;
+        // Show the modal
+        modal.style.display = 'block';
+    }
+    // Function to close the project details modal
+    function closeModal() {
+        const modal = document.getElementById('projectModal');
+        modal.style.display = 'none';
+    }
+    // Function to open the Team Leader ID Card modal
+    function openIdCardModal(idCardUrl) {
+        const idCardModal = document.getElementById('idCardModal');
+        const idCardPreview = document.getElementById('idCardPreview');
+        // Clear previous content
+        idCardPreview.innerHTML = '';
+        // Check if the file is an image
+        if (idCardUrl.endsWith('.png') || idCardUrl.endsWith('.jpg') || idCardUrl.endsWith('.jpeg')) {
+            idCardPreview.innerHTML = `<img src="${idCardUrl}" alt="Team Leader ID Card">`;
+        } else {
+            // For non-image files (e.g., PDF)
+            idCardPreview.innerHTML = `<iframe src="${idCardUrl}"></iframe>`;
+        }
+        // Show the modal
+        idCardModal.style.display = 'block';
+    }
+    // Function to close the Team Leader ID Card modal
+    function closeIdCardModal() {
+        const idCardModal = document.getElementById('idCardModal');
+        idCardModal.style.display = 'none';
+    }
+    // Close modals when clicking outside of them
+    window.onclick = function(event) {
+        const projectModal = document.getElementById('projectModal');
+        const idCardModal = document.getElementById('idCardModal');
+        if (event.target === projectModal) {
+            closeModal();
+        }
+        if (event.target === idCardModal) {
+            closeIdCardModal();
+        }
+    };
+</script>
+<style>
+    /* General Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+        height: 100vh; /* Full viewport height */
+        display: flex;
+        flex-direction: column;
+    }
+    /* Navigation Bar */
+    nav {
+        background-color: #4C1D3D; /* Dark purple background */
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center; /* Vertically center content */
+        justify-content: space-between; /* Space between logo and menu items */
+    }
+    /* Logo Container */
+    nav .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between logo and text */
+    }
+    /* Logo Image */
+    nav .logo-container img {
+        height: 40px; /* Adjust logo height */
+        width: auto; /* Maintain aspect ratio */
+    }
+    /* Logo Text */
+    nav .logo-container span {
+        font-size: 1.5rem; /* Increase font size */
+        font-weight: bold; /* Bold text */
+        color: white; /* Match navigation bar color */
+    }
+    /* Menu Items */
+    nav ul.menu {
+        list-style-type: none;
+        display: flex;
+        gap: 20px; /* Space between menu items */
+    }
+    nav ul.menu li a {
+        color: white; /* White text for menu items */
+        text-decoration: none;
+        font-size: 1.2rem; /* Font size for menu items */
+    }
+    nav ul.menu li a:hover {
+        text-decoration: underline; /* Underline on hover */
+    }
+    /* Main Container */
+    .container {
+        flex: 1; /* Takes up remaining space */
+        display: flex;
+        flex-direction: column;
+        max-width: 100vw; /* Full viewport width */
+        margin: 0 auto;
+        padding: 20px;
+        background: white;
+        overflow: hidden; /* Prevents scrollbars */
+    }
+    h1 {
+        text-align: center;
+        color: #4C1D3D;
+        font-size: 36px; /* Larger font size for header */
+        margin-bottom: 30px; /* Space between header and table */
+    }
+    /* Flexbox Layout for Table and Filters */
+    .flex-container {
+        flex: 1; /* Takes up remaining space */
+        display: flex;
+        gap: 20px; /* Space between table and filters */
+        overflow: hidden; /* Prevents scrollbars */
+    }
+    .projects-table {
+        flex: 3; /* Table takes up more space */
+        overflow-y: auto; /* Enable vertical scrolling */
+    }
+    .filters {
+        flex: 1; /* Filters take up less space */
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow-y: auto; /* Enable scrolling if filters exceed height */
+    }
+    .filters h3 {
+        margin-top: 0;
+        color: #4C1D3D;
+        font-size: 20px; /* Increased font size for filters */
+    }
+    .filters label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+        font-size: 1rem; /* Slightly increased font size */
+    }
+    .filters select,
+    .filters button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem; /* Consistent font size */
+    }
+    .filters button {
+        background-color: #4C1D3D;
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    .filters button:hover {
+        background-color: #3b172d;
+    }
+    /* Table Styles */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1.2rem;
+        table-layout: fixed; /* Ensures column widths are controlled */
+    }
+    .styled-table th,
+    .styled-table td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd; /* Add borders for both rows and columns */
+        word-wrap: break-word; /* Ensures long content wraps within cells */
+    }
+    .styled-table th {
+        background-color: #4C1D3D;
+        color: white;
+        font-size: 1.5rem;
+        position: sticky; /* Sticky header */
+        top: 0;
+        z-index: 1;
+    }
+    .styled-table tr:hover {
+        background-color: #f1f1f1;
+    }
+    /* Style for clickable project names */
+    .project-name {
+        color: #007BFF;
+        font-weight: bold;
+        font-size: 1.5rem;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .project-name:hover {
+        text-decoration: underline;
+    }
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close:hover {
+        color: black;
+    }
+    .modal-header {
+        margin-bottom: 20px;
+    }
+    .modal-body {
+        font-size: 1.2rem;
+        line-height: 1.6;
+    }
+    .modal-body p {
+        margin: 10px 0;
+    }
+    /* Styling for clickable links */
+    .clickable-link {
+        color: #007BFF;
+        text-decoration: none;
+    }
+    .clickable-link:hover {
+        text-decoration: underline;
+    }
+    /* ID Card Modal Styles */
+    #idCardModal {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    #idCardModalContent {
+        background-color: white;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #idCardPreview img {
+        max-width: 100%;
+        height: auto;
+    }
+    #idCardPreview iframe {
+        width: 100%;
+        height: 500px;
+    }
+    /* Change modal title color and font size */
+    #modalTitle {
+        color: #007BFF; /* Blue color for the title */
+        font-size: 24px; /* Larger font size */
+        font-weight: bold; /* Bold text */
+    }
+</style>
+{% endblock %}

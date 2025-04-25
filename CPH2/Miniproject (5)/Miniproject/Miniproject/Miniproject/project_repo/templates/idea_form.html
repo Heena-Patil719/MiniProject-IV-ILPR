@@ -1,0 +1,375 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Idea Submission</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #FA9591, #FFFFFF);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            background: #85264E;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        input, textarea, select {
+            width: 100%;
+            height: 45px;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .btn {
+            background: #85264E;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #85264E;
+        }
+        .char-counter {
+            text-align: right;
+            font-size: 14px;
+            color: gray;
+            margin-top: 3px;
+            font-weight: bold;
+        }
+        input[type="radio"] {
+            transform: scale(1.5);
+            margin-right: 5px;
+        }
+        #popup-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+        }
+        #popup-message .message {
+            margin-bottom: 20px;
+        }
+        #popup-message .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        #popup-message button {
+            background: #85264E;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #popup-message button.cancel {
+            background: #FF5733;
+        }
+        /* Error styling */
+        .error {
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+    <script>
+        // Function to validate email
+        function validateEmailField(emailInput, errorElement) {
+            let email = emailInput.value;
+            let emailPattern = /^[a-zA-Z0-9._%+-]+@gst\.sies\.edu\.in$/;
+
+            if (!emailPattern.test(email)) {
+                errorElement.style.display = "block";
+                return false;
+            } else {
+                errorElement.style.display = "none";
+                return true;
+            }
+        }
+
+        // Function to generate team member fields dynamically
+        function generateTeamFields() {
+            let count = document.getElementById('team-count').value;
+            let container = document.getElementById('team-members');
+            container.innerHTML = "";
+            for (let i = 1; i <= count; i++) {
+                let div = document.createElement("div");
+                div.classList.add("form-group");
+                div.innerHTML = `
+                    <label>Team Member ${i} Name:</label>
+                    <input type="text" name="team_member_${i}_name" required>
+                    <label>Team Member ${i} Email:</label>
+                    <input type="email" name="team_member_${i}_email" required>
+                    <span class="error" id="team-member-${i}-email-error">Please use an email ending with @gst.sies.edu.in</span>
+                    <label>Team Member ${i} ID Card:</label>
+                    <input type="file" name="team_member_${i}_id_card" accept=".jpg, .png, .pdf" required>
+                `;
+                container.appendChild(div);
+
+                // Add event listener for email validation
+                let emailInput = div.querySelector(`input[name="team_member_${i}_email"]`);
+                let errorElement = div.querySelector(`#team-member-${i}-email-error`);
+                emailInput.addEventListener("input", function () {
+                    validateEmailField(emailInput, errorElement);
+                });
+            }
+        }
+
+        // Function to update the character counter dynamically
+        function updateCounter(textarea, counterId) {
+            const maxLength = textarea.getAttribute('maxlength');
+            const currentLength = textarea.value.length;
+            const remaining = maxLength - currentLength;
+            document.getElementById(counterId).textContent = `${remaining} characters remaining`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Team Leader Email Validation
+            let teamLeaderEmailInput = document.querySelector('input[name="team_leader_email"]');
+            let teamLeaderEmailError = document.getElementById("team-leader-email-error");
+
+            teamLeaderEmailInput.addEventListener("input", function () {
+                validateEmailField(teamLeaderEmailInput, teamLeaderEmailError);
+            });
+
+            // Populate academic years dropdown
+            const populateAcademicYears = () => {
+                const dropdown = document.getElementById('academic_year');
+                dropdown.innerHTML = '<option value="" disabled selected>Select Academic Year</option>';
+                let currentYear = new Date().getFullYear();
+                for (let i = 0; i < 4; i++) {
+                    let startYear = currentYear - i;
+                    let endYear = startYear + 1;
+                    let option = document.createElement('option');
+                    option.value = `${startYear}-${endYear}`;
+                    option.textContent = `${startYear}-${endYear}`;
+                    dropdown.appendChild(option);
+                }
+            };
+            populateAcademicYears();
+
+            // Handle form submission
+            const ideaForm = document.getElementById("ideaForm");
+            ideaForm.addEventListener("submit", function (event) {
+                // Validate Team Leader Email
+                if (!validateEmailField(teamLeaderEmailInput, teamLeaderEmailError)) {
+                    event.preventDefault();
+                    alert("Please use an email ending with @gst.sies.edu.in for the Team Leader.");
+                    return;
+                }
+
+                // Validate Team Member Emails
+                let teamMemberEmailInputs = document.querySelectorAll('input[name^="team_member_"][name$="_email"]');
+                let isValid = true;
+                teamMemberEmailInputs.forEach(input => {
+                    let errorElement = input.nextElementSibling; // Assumes error element is next sibling
+                    if (!validateEmailField(input, errorElement)) {
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                    alert("Please use emails ending with @gst.sies.edu.in for all Team Members.");
+                }
+            });
+
+            // Add next idea button functionality
+            document.getElementById("add-next-idea").onclick = function () {
+                document.getElementById("popup-message").style.display = "none";
+                ideaForm.reset();
+                document.getElementById("team-members").innerHTML = "";
+                populateAcademicYears();
+            };
+
+            // Cancel submission and redirect to projects.html
+            document.getElementById("cancel-submission").onclick = function () {
+                document.getElementById("popup-message").style.display = "none";
+                window.location.href = "projects.html";
+            };
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form id="ideaForm" method="POST" enctype="multipart/form-data" action="/submit-idea/">
+            {% csrf_token %}
+            <h1>Select and Add Idea and Innovation</h1>
+            <div class="form-group">
+                <label>Develop as part of</label>
+                <select name="develop_as_part" required>
+                    <option value="">Select an Option</option>
+                    <option value="academic_requirement">Academic Requirement/Study Project</option>
+                    <option value="academic_research">Academic Research Assignment/Industry Sponsored Project</option>
+                    <option value="independent_assignment">Independent Assignment/Non-academic Study Project</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Title of Project</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="form-group">
+                <label>Academic Year</label>
+                <select id="academic_year" name="academic_year" required>
+                    <option value="" disabled selected>Select Academic Year</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="branch">Branch<span>*</span></label>
+                <select name="branch" id="branch" required>
+                    <option value="" disabled selected>Select your branch</option>
+                    <option value="Artificial Intelligence & Data Science (AIDS)">Artificial Intelligence & Data Science (AIDS)</option>
+                    <option value="Artificial Intelligence & Machine Learning (AIML)">Artificial Intelligence & Machine Learning (AIML)</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Computer Engineering">Computer Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="domain">Domain</label>
+                <select id="domain" name="domain" required>
+                    <option value="">Select a Domain</option>
+                    <option value="IOT">IoT</option>
+                    <option value="website">Website</option>
+                    <option value="app">App Development</option>
+                    <option value="aiml">AI/ML</option>
+                    <option value="aids">AIDS (Artificial Intelligence & Data Science)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="innovation_type">Innovation Type *</label>
+                <select id="innovation_type" name="innovation_type" required>
+                    <option value="" disabled selected>Select Innovation Type</option>
+                    <option value="product">Product</option>
+                    <option value="service">Service</option>
+                    <option value="process">Process</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status Level</label>
+                <div style="display: flex; gap: 40px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="radio" name="status_level" value="1" required> 1
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="radio" name="status_level" value="2"> 2
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="radio" name="status_level" value="3"> 3
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Define the Problem</label>
+                <textarea name="problem" rows="3" maxlength="1000" oninput="updateCounter(this, 'problem-counter')" required></textarea>
+                <div id="problem-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+            <div class="form-group">
+                <label>Describe the Solution</label>
+                <textarea name="solution" rows="3" maxlength="1000" oninput="updateCounter(this, 'solution-counter')" required></textarea>
+                <div id="solution-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+            <div class="form-group">
+                <label>Unique Features</label>
+                <textarea name="features" rows="3" maxlength="1000" oninput="updateCounter(this, 'features-counter')" required></textarea>
+                <div id="features-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+            <div class="form-group">
+                <label>How is it Different?</label>
+                <textarea name="difference" rows="3" maxlength="1000" oninput="updateCounter(this, 'difference-counter')" required></textarea>
+                <div id="difference-counter" class="char-counter">1000 characters remaining</div>
+            </div>
+            <div class="form-group">
+                <label>Video URL (YouTube or Google Drive)</label>
+                <input type="url" id="video_url" name="video_url" required>
+                <span id="video-error" style="color: red; font-size: 14px;"></span>
+            </div>
+            <div class="form-group">
+                <label>Upload Photograph (JPG, PNG, PDF max 200MB)</label>
+                <input type="file" name="upload" accept=".jpg, .png, .pdf">
+            </div>
+            <div class="form-group">
+                <select name="mentor" id="mentor" required>
+                    <option value="">Select a Mentor</option>
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.name }}">{{ teacher.name }}</option>
+                    {% empty %}
+                        <option disabled>No mentors found</option>
+                    {% endfor %}
+                </select>
+                <p>Number of mentors: {{ teachers|length }}</p>
+            </div>
+            <div class="form-group">
+                <label>Team Leader Name</label>
+                <input type="text" name="team_leader_name" required>
+            </div>
+            <div class="form-group">
+                <label>Team Leader Email</label>
+                <input type="email" name="team_leader_email" required>
+                <span class="error" id="team-leader-email-error">Please use an email ending with @gst.sies.edu.in</span>
+            </div>
+            <div class="form-group">
+                <label>Team Leader ID Card (JPG, PNG, PDF max 2MB)</label>
+                <input type="file" name="team_leader_id_card" accept=".jpg, .png, .pdf" required>
+            </div>
+            <div class="form-group">
+                <label>Number of Team Members</label>
+                <input type="number" id="team-count" name="team_count" min="1" max="10" required onchange="generateTeamFields()">
+            </div>
+            <div id="team-members"></div>
+            <button class="btn" type="submit">Save and Next</button>
+        </form>
+        <div id="popup-message">
+            <div class="message">Idea submitted successfully!</div>
+            <div class="buttons">
+                <button id="add-next-idea">If you want to add new idea</button>
+                <button id="cancel-submission" class="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
